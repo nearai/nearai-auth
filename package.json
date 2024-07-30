@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@near-wallet-selector/bitget-wallet": "^8.9.10",
     "@near-wallet-selector/coin98-wallet": "^8.9.10",
     "@near-wallet-selector/core": "^8.9.10",
@@ -33,12 +34,13 @@
     "@near-wallet-selector/welldone-wallet": "^8.9.10",
     "@near-wallet-selector/xdefi": "^8.9.10",
     "buffer": "^6.0.3",
+    "process": "^0.11.10",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.25.1"
   },
   "devDependencies": {
     "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^4.3.1",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.2",

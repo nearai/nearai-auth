@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 
+import { Buffer } from "buffer";
+
 import { setupWalletSelector } from "@near-wallet-selector/core";
 import { setupBitgetWallet } from "@near-wallet-selector/bitget-wallet";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
@@ -56,22 +58,10 @@ const selector = await setupWalletSelector({
 });
 
 const signMessage = async (walletName, queryParams) => {
-    console.log("walletName", walletName)
-    const {message, recipient} = queryParams;
-    const nonce = queryParams.nonce ? Buffer.from(queryParams.nonce) : Buffer.from(crypto.getRandomValues(new Uint8Array(32)));
-
-    const fullUrl = window.location.href;
-    const urlObj = new URL(fullUrl);
-    const callbackUrl = `${urlObj.origin}${urlObj.pathname}`;
+    const {message, recipient, callbackUrl} = queryParams;
+    const nonce = Buffer.from(queryParams.nonce);
 
     let wallet = await selector.wallet(walletName);
-
-    localStorage.setItem("signMessageParams", JSON.stringify({
-        message,
-        nonce: [...nonce],
-        recipient,
-        callbackUrl
-    }));
 
     const signedMessage = await wallet.signMessage({
         message,
@@ -81,20 +71,17 @@ const signMessage = async (walletName, queryParams) => {
     });
 
     // injected wallets auth
-    auth(signedMessage.accountId, signedMessage.signature, signedMessage.publicKey);
+    respondSignatureData(callbackUrl, signedMessage.accountId, signedMessage.signature, signedMessage.publicKey);
 }
 
-const auth = (accountId, signature, publicKey) => {
-    const serverCallbackUrl = localStorage.getItem("serverCallbackUrl");
-    const signMessageParams = localStorage.getItem("signMessageParams") ?? "{}";
-    if (serverCallbackUrl) {
+const respondSignatureData = (callbackUrl, accountId, signature, publicKey) => {
+    if (callbackUrl) {
         const urlParams = new URLSearchParams({
-            signMessageParams,
             accountId,
             signature,
             publicKey
         });
-        forwardTo(`${serverCallbackUrl}?${urlParams.toString()}`);
+        forwardTo(`${callbackUrl}#${urlParams.toString()}`);
     }
     else {
         console.error("Illegal data");
@@ -105,36 +92,48 @@ const forwardTo = (downloadUrl) => {
     window.location.replace(downloadUrl);
 }
 
+const padWithZeros = (input) => {
+    console.log(input)
+    if (/^\d+$/.test(input)) {
+        while (input.length < 32) {
+            input = '0' + input;
+        }
+        return input;
+    } else {
+        throw new Error("Nonce contains non-numeric characters");
+    }
+}
+
 function App() {
     const validDataProvided = useRef(false);
     const initWallets = useRef(false);
     const [data, setData] = useState([]);
     const [queryParams, setQueryParams] = useState({});
+    const [expanded, setExpanded] = useState(false);
 
     useEffect(() => {
-        if (initWallets.current) return;
-        initWallets.current = true;
+        const searchParams = new URLSearchParams(window.location.search);
 
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        const paramsObj = {};
-        params.forEach((value, key) => {
-            paramsObj[key] = value;
-            localStorage.setItem(key, value);
+        setQueryParams({
+            message: searchParams.get("message"),
+            recipient: searchParams.get("recipient"),
+            nonce: searchParams.get("nonce"),
+            callbackUrl: searchParams.get("callbackUrl"),
         });
-        setQueryParams(paramsObj);
+    }, []);
 
-        const {accountId, signature, publicKey, serverCallbackUrl, message, recipient} = paramsObj;
+    useEffect(() => {
+        const {message, recipient, nonce, callbackUrl} = queryParams;
 
-        if (serverCallbackUrl && message && recipient) {
-            // enough data to sign message
+        if (callbackUrl && message && recipient && nonce) {
+            queryParams.nonce = padWithZeros(queryParams.nonce);
+            console.log(queryParams.nonce)
+            // enough data to sign the message
             validDataProvided.current = true;
         }
 
-        if (accountId && signature && publicKey) {
-            // web wallets auth
-            auth(accountId, signature, publicKey);
-        }
+        if (initWallets.current) return;
+        initWallets.current = true;
 
         const fetchWalletsData = async () => {
             try {
@@ -146,7 +145,7 @@ function App() {
         };
 
         fetchWalletsData();
-    }, []);
+    }, [queryParams]);
 
     return (
         <div>
@@ -161,12 +160,17 @@ function App() {
                         <div className="column action">
                             { validDataProvided.current ?
                                 <>{ item.metadata.available ?
-                                <button onClick={()=>signMessage(item.id, queryParams)} className="sign-in">Sign In</button> :
+                                <button onClick={()=>signMessage(item.id, queryParams)} className="sign-in">Login</button> :
                                 <button onClick={()=>forwardTo(item.metadata.downloadUrl)}>Install</button>
                             }</> : <button disabled={true}>No&nbsp;data</button>}
                         </div>
                     </div>
                 ))}
+            </div>
+            <div className="container scroll-container">
+            <div className={`expandable ${expanded ? 'expanded' : ''}`} onClick={()=>setExpanded(!expanded)}>Message details</div>
+
+                {expanded && <pre>{JSON.stringify(queryParams, null, 4)}</pre>}
             </div>
         </div>
     );

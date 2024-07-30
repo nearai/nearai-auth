@@ -10,5 +10,13 @@ export default defineConfig({
   define: {
     'process.env': {},
     global: {},
+  },
+  build: {
+    target: "ES2022"
+  },
+  resolve: {
+    alias: {
+      process: "process/browser"
+    }
   }
 })

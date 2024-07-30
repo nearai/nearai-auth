@@ -40,7 +40,7 @@
 .row {
   width: 100%;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 2em;
   align-items: center;
   border-width: 1px;
@@ -74,4 +74,41 @@ button.sign-in {
   }
 }
 
+.scroll-container {
+  margin-top: 3em;
+  overflow-x: auto;
+  white-space: nowrap;
+  background-color: #f4f4f4;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+pre {
+  margin-top: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  text-align: left;
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.expandable {
+  cursor: pointer;
+  align-items: center;
+}
+
+.expandable::after {
+  content: '▼';
+  margin-left: 0.5rem;
+}
+
+.expandable.expanded::after {
+  content: '▲';
+}
 
