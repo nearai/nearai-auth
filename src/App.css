@@ -84,6 +84,21 @@ button.sign-in {
   border-radius: 5px;
 }
 
+.container-remote-login {
+  gap: 0;
+  margin-top: 1em;
+}
+
+.container-remote-login pre {
+  font-family: 'Lucida Console', 'Monaco', 'Consolas', 'Menlo', monospace;
+  font-size: 0.8em;
+}
+
+.container-remote-login button {
+  border-color: grey;
+}
+
+
 pre {
   margin-top: 0;
   white-space: pre-wrap;

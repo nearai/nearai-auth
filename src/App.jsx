@@ -19,7 +19,12 @@ import { setupXDEFI } from "@near-wallet-selector/xdefi";
 import { setupNearMobileWallet } from "@near-wallet-selector/near-mobile-wallet";
 import { setupMintbaseWallet } from "@near-wallet-selector/mintbase-wallet";
 
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import copy from "copy-to-clipboard";
+
 import './App.css'
+import {generateCallbackUrl} from "./utils.js";
 
 
 const selector = await setupWalletSelector({
@@ -57,7 +62,7 @@ const selector = await setupWalletSelector({
     ],
 });
 
-const signMessage = async (walletName, queryParams) => {
+const signMessage = async (walletName, queryParams, remoteLogin) => {
     const {message, recipient, callbackUrl} = queryParams;
     const nonce = Buffer.from(queryParams.nonce);
 
@@ -70,8 +75,21 @@ const signMessage = async (walletName, queryParams) => {
         callbackUrl
     });
 
-    // injected wallets auth
-    respondSignatureData(callbackUrl, signedMessage.accountId, signedMessage.signature, signedMessage.publicKey);
+    if (remoteLogin) {
+        return {
+            signature: signedMessage.signature,
+            accountId: signedMessage.accountId,
+            publicKey: signedMessage.publicKey,
+            message,
+            nonce,
+            recipient,
+            callbackUrl
+        }
+    }
+    else {
+        // injected wallets auth
+        return respondSignatureData(callbackUrl, signedMessage.accountId, signedMessage.signature, signedMessage.publicKey);
+    }
 }
 
 const respondSignatureData = (callbackUrl, accountId, signature, publicKey) => {
@@ -86,6 +104,8 @@ const respondSignatureData = (callbackUrl, accountId, signature, publicKey) => {
     else {
         console.error("Illegal data");
     }
+
+    return {};
 }
 
 const forwardTo = (downloadUrl) => {
@@ -93,7 +113,6 @@ const forwardTo = (downloadUrl) => {
 }
 
 const padWithZeros = (input) => {
-    console.log(input)
     if (/^\d+$/.test(input)) {
         while (input.length < 32) {
             input = '0' + input;
@@ -110,6 +129,9 @@ function App() {
     const [data, setData] = useState([]);
     const [queryParams, setQueryParams] = useState({});
     const [expanded, setExpanded] = useState(false);
+    /// no callbackUrl, but we show NearAI command how to login
+    const [remoteLogin, setRemoteLogin] = useState(false);
+    const [remoteLoginData, setRemoteLoginData] = useState({});
 
     useEffect(() => {
         const searchParams = new URLSearchParams(window.location.search);
@@ -119,17 +141,54 @@ function App() {
             recipient: searchParams.get("recipient"),
             nonce: searchParams.get("nonce"),
             callbackUrl: searchParams.get("callbackUrl"),
+
+            type: searchParams.get("type"),
+
+            accountId: searchParams.get("accountId"),
+            publicKey: searchParams.get("publicKey"),
+            signature: searchParams.get("signature"),
         });
     }, []);
 
     useEffect(() => {
-        const {message, recipient, nonce, callbackUrl} = queryParams;
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        params.forEach((value, key) => {
+            queryParams[key] = value;
+        });
 
-        if (callbackUrl && message && recipient && nonce) {
+        const {message, recipient, nonce, callbackUrl, accountId, publicKey, signature, type} = queryParams;
+
+        if (nonce) {
             queryParams.nonce = padWithZeros(queryParams.nonce);
-            console.log(queryParams.nonce)
+        }
+
+        if (message && recipient && nonce) {
+            if (!callbackUrl) {
+                setRemoteLogin(true);
+                queryParams.callbackUrl =  generateCallbackUrl(queryParams);
+            }
+
+            queryParams.nonce = padWithZeros(queryParams.nonce);
             // enough data to sign the message
             validDataProvided.current = true;
+        }
+
+        if (accountId && publicKey && signature) {
+            if (type === "remote") {
+                setRemoteLoginData ({
+                    signature,
+                    accountId,
+                    publicKey,
+                    message,
+                    recipient,
+                    nonce,
+                    callbackUrl: generateCallbackUrl(queryParams)
+                })
+
+                const cleanUrl = window.location.origin;
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
         }
 
         if (initWallets.current) return;
@@ -147,9 +206,43 @@ function App() {
         fetchWalletsData();
     }, [queryParams]);
 
+    const displayRemoteLoginData = !!Object.keys(remoteLoginData).length;
+
+    const getSignInCli = () => {
+        return `nearai login save --accountId=${remoteLoginData.accountId} --signature=${remoteLoginData.signature} --publicKey=${remoteLoginData.publicKey} --nonce=${remoteLoginData.nonce} --callbackUrl='${remoteLoginData.callbackUrl}'`
+    }
+
+    const copyToClipboard = () => {
+        let isCopy = copy(getSignInCli());
+        if (isCopy) {
+            toast.success("Copied to Clipboard");
+        }
+    };
+
     return (
         <div>
-            <h1>Login with NEAR</h1>
+            <ToastContainer
+                position="bottom-center"
+                autoClose={500}
+                hideProgressBar
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="colored"
+            />
+
+            {displayRemoteLoginData && <div>
+                <h2>Successfully Signed with NEAR</h2>
+                <p>To complete your login, please return to the console and enter the following command:</p>
+                <div className="container scroll-container container-remote-login">
+                    <pre>{getSignInCli()}</pre>
+                    <button onClick={copyToClipboard}>Copy To Clipboard</button>
+                </div>
+            </div>}
+            {!displayRemoteLoginData && <><h1>Login with NEAR</h1>
             <div className="container">
                 {(data ?? [])
                     .filter(item => !item.metadata.deprecated)
@@ -160,7 +253,10 @@ function App() {
                         <div className="column action">
                             { validDataProvided.current ?
                                 <>{ item.metadata.available ?
-                                <button onClick={()=>signMessage(item.id, queryParams)} className="sign-in">Login</button> :
+                                <button onClick={async () => {
+                                    const data = await signMessage(item.id, queryParams, remoteLogin);
+                                    setRemoteLoginData(data);
+                                }} className="sign-in">Login</button> :
                                 <button onClick={()=>forwardTo(item.metadata.downloadUrl)}>Install</button>
                             }</> : <button disabled={true}>No&nbsp;data</button>}
                         </div>
@@ -169,9 +265,9 @@ function App() {
             </div>
             <div className="container scroll-container">
             <div className={`expandable ${expanded ? 'expanded' : ''}`} onClick={()=>setExpanded(!expanded)}>Message details</div>
-
                 {expanded && <pre>{JSON.stringify(queryParams, null, 4)}</pre>}
             </div>
+            </>}
         </div>
     );
 }
