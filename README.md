@@ -4,11 +4,19 @@ Displays a list of wallets from `wallet-selector` and allows signing a message w
 
 # How to run
 
-```
+```bash
 npm i
 npm run dev
 ```
 
+
+# How to update
+
+```bash
+npm install -g npm-check-updates
+ncu "/^@near-wallet-selector/" -u
+npm install
+```
 
 # How to use
 
