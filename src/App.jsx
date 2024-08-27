@@ -17,7 +17,7 @@ import { setupNearFi } from "@near-wallet-selector/nearfi";
 import { setupCoin98Wallet } from "@near-wallet-selector/coin98-wallet";
 import { setupXDEFI } from "@near-wallet-selector/xdefi";
 import { setupNearMobileWallet } from "@near-wallet-selector/near-mobile-wallet";
-import { setupMintbaseWallet } from "@near-wallet-selector/mintbase-wallet";
+import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -53,7 +53,7 @@ const selector = await setupWalletSelector({
             },
         }),
         setupNearMobileWallet(),
-        setupMintbaseWallet({
+        setupBitteWallet({
             networkId: "mainnet",
             walletUrl: "https://wallet.mintbase.xyz",
             callbackUrl: "https://www.mywebsite.com",
@@ -219,6 +219,10 @@ function App() {
         }
     };
 
+    const filteredQueryParams = Object.fromEntries(
+        Object.entries(queryParams).filter(([, value]) => value !== null)
+    );
+
     return (
         <div>
             <ToastContainer
@@ -248,7 +252,8 @@ function App() {
                     .filter(item => !item.metadata.deprecated)
                     .map((item, index) => (
                     <div key={index} className="row">
-                        <div className="column"><img className={"logo"} src={item.metadata.iconUrl} /></div>
+
+                        <div className="column"><img className={"logo"} src={`${item.id}.png`} /></div>
                         <div className="column name">{item.metadata.name}</div>
                         <div className="column action">
                             { validDataProvided.current ?
@@ -265,7 +270,7 @@ function App() {
             </div>
             <div className="container scroll-container">
             <div className={`expandable ${expanded ? 'expanded' : ''}`} onClick={()=>setExpanded(!expanded)}>Message details</div>
-                {expanded && <pre>{JSON.stringify(queryParams, null, 4)}</pre>}
+                {expanded && <pre>{JSON.stringify(filteredQueryParams, null, 4)}</pre>}
             </div>
             </>}
         </div>
