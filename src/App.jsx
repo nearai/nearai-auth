@@ -3,20 +3,20 @@ import { useState, useRef, useEffect } from 'react'
 import { Buffer } from "buffer";
 
 import { setupWalletSelector } from "@near-wallet-selector/core";
-import { setupBitgetWallet } from "@near-wallet-selector/bitget-wallet";
+//import { setupBitgetWallet } from "@near-wallet-selector/bitget-wallet";
 import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 import { setupSender } from "@near-wallet-selector/sender";
 import { setupHereWallet } from "@near-wallet-selector/here-wallet";
-import { setupMathWallet } from "@near-wallet-selector/math-wallet";
-import { setupNightly } from "@near-wallet-selector/nightly";
+//import { setupMathWallet } from "@near-wallet-selector/math-wallet";
+//import { setupNightly } from "@near-wallet-selector/nightly";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
-import { setupNarwallets } from "@near-wallet-selector/narwallets";
-import { setupWelldoneWallet } from "@near-wallet-selector/welldone-wallet";
-import { setupWalletConnect } from "@near-wallet-selector/wallet-connect";
-import { setupNearFi } from "@near-wallet-selector/nearfi";
-import { setupCoin98Wallet } from "@near-wallet-selector/coin98-wallet";
-import { setupXDEFI } from "@near-wallet-selector/xdefi";
-import { setupNearMobileWallet } from "@near-wallet-selector/near-mobile-wallet";
+//import { setupNarwallets } from "@near-wallet-selector/narwallets";
+//import { setupWelldoneWallet } from "@near-wallet-selector/welldone-wallet";
+//import { setupWalletConnect } from "@near-wallet-selector/wallet-connect";
+//import { setupNearFi } from "@near-wallet-selector/nearfi";
+//import { setupCoin98Wallet } from "@near-wallet-selector/coin98-wallet";
+//import { setupXDEFI } from "@near-wallet-selector/xdefi";
+//import { setupNearMobileWallet } from "@near-wallet-selector/near-mobile-wallet";
 import { setupBitteWallet } from "@near-wallet-selector/bitte-wallet";
 
 import { ToastContainer, toast } from "react-toastify";
@@ -30,33 +30,33 @@ import {generateCallbackUrl} from "./utils.js";
 const selector = await setupWalletSelector({
     network: "mainnet",
     modules: [
-        setupBitgetWallet(),
+        //setupBitgetWallet(),
         setupMyNearWallet(),
         setupSender(),
         setupHereWallet(),
-        setupMathWallet(),
-        setupNightly(),
+        //setupMathWallet(),
+        //setupNightly(),
         setupMeteorWallet(),
         // setupOkxWallet(),
-        setupNarwallets(),
-        setupWelldoneWallet(),
-        setupNearFi(),
-        setupCoin98Wallet(),
-        setupXDEFI(),
-        setupWalletConnect({
-            projectId: "c4f79cc...",
-            metadata: {
-                name: "NEAR Wallet Selector",
-                description: "Example dApp used by NEAR Wallet Selector",
-                url: "https://github.com/near/wallet-selector",
-                icons: ["https://avatars.githubusercontent.com/u/37784886"],
-            },
-        }),
-        setupNearMobileWallet(),
+        //setupNarwallets(),
+        //setupWelldoneWallet(),
+        // setupNearFi(),
+        // setupCoin98Wallet(),
+        // setupXDEFI(),
+        // setupWalletConnect({
+        //     projectId: "c4f79cc...",
+        //     metadata: {
+        //         name: "NEAR Wallet Selector",
+        //         description: "Example dApp used by NEAR Wallet Selector",
+        //         url: "https://github.com/near/wallet-selector",
+        //         icons: ["https://avatars.githubusercontent.com/u/37784886"],
+        //     },
+        // }),
+        // setupNearMobileWallet(),
         setupBitteWallet({
             networkId: "mainnet",
-            walletUrl: "https://wallet.mintbase.xyz",
-            callbackUrl: "https://www.mywebsite.com",
+            walletUrl: "https://wallet.bitte.ai",
+            callbackUrl: "https://app.near.ai",
             deprecated: false,
         }),
     ],
