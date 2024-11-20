@@ -16,7 +16,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@near-pagoda/ui": "^2.0.18",
+    "@near-pagoda/ui": "^2.1.0",
     "@near-wallet-selector/bitget-wallet": "^8.9.14",
     "@near-wallet-selector/bitte-wallet": "^8.9.14",
     "@near-wallet-selector/coin98-wallet": "^8.9.14",

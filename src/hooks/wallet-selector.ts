@@ -11,7 +11,7 @@ import { setupNearMobileWallet } from '@near-wallet-selector/near-mobile-wallet'
 import { setupSender } from '@near-wallet-selector/sender';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { QueryParams } from './utils';
+import type { QueryParams } from '../utils/helpers';
 
 export function useWalletSelector() {
   const setupPromise = useRef<Promise<WalletSelector> | null>(null);
@@ -26,13 +26,13 @@ export function useWalletSelector() {
           modules: [
             setupMyNearWallet(),
             setupSender(),
-            setupHereWallet(),
             setupMeteorWallet(),
             setupBitteWallet({
               walletUrl: 'https://wallet.bitte.ai',
               callbackUrl: 'https://app.near.ai',
               deprecated: false,
             }),
+            setupHereWallet(),
             setupNearMobileWallet(),
           ],
         });

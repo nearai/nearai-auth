@@ -23,9 +23,9 @@ import {
 } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 
-import { useWalletSelector } from './hooks';
-import type { QueryParams } from './utils';
-import { generateCallbackUrl, getQueryParams } from './utils';
+import { useWalletSelector } from './hooks/wallet-selector';
+import type { QueryParams } from './utils/helpers';
+import { generateCallbackUrl, getQueryParams } from './utils/helpers';
 
 export const Login = () => {
   const { state, signMessage } = useWalletSelector();
@@ -118,7 +118,7 @@ export const Login = () => {
               following command:
             </Text>
 
-            <Card style={{ textAlign: 'left' }}>
+            <Card background="sand-2">
               <Text color="sand-12" family="monospace" size="text-xs">
                 {cliSignInCommand}
               </Text>
@@ -152,7 +152,7 @@ export const Login = () => {
             style={{ padding: '0.75rem', margin: '0 auto' }}
           />
 
-          <Text as="h1" size="text-2xl" style={{ margin: '0 auto' }}>
+          <Text as="h1" size="text-xl" style={{ margin: '0 auto' }}>
             Login with NEAR
           </Text>
 
@@ -173,18 +173,21 @@ export const Login = () => {
                       ? () => logInWithModule(module)
                       : undefined
                   }
-                  padding="s"
+                  background="sand-0"
+                  backgroundHover="sand-2"
+                  border="sand-3"
+                  indicateFocus={false}
                 >
                   <Flex align="center" gap="m">
                     <ImageIcon
                       src={module.metadata.iconUrl}
                       alt={module.metadata.name}
+                      indicateParentClickable
                     />
                     <Text weight={500} color="sand-12">
                       {module.metadata.name}
                     </Text>
                     <SvgIcon
-                      size="xs"
                       color={module.metadata.available ? 'violet-9' : 'sand-9'}
                       icon={
                         module.metadata.available ? (
