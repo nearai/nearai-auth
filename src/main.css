@@ -1,0 +1,7 @@
+:root {
+  --header-height: 0px;
+  /*
+    This app doesn't have a main sticky nav header at the moment.
+    The "--header-height" variable impacts <Section grow="screen-height">
+  */
+}
