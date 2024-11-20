@@ -104,7 +104,7 @@ export const Login = () => {
               size="xl"
               icon={<CheckCircle weight="fill" />}
               style={{ margin: '0 auto' }}
-              color="green-brand"
+              color="green-9"
             />
 
             <Text size="text-xl" style={{ margin: '0 auto' }}>
@@ -118,7 +118,7 @@ export const Login = () => {
               following command:
             </Text>
 
-            <Card background="sand-2">
+            <Card background="sand-3">
               <Text color="sand-12" family="monospace" size="text-xs">
                 {cliSignInCommand}
               </Text>
@@ -210,7 +210,7 @@ export const Login = () => {
             <Accordion.Item value="message-details">
               <Accordion.Trigger>Message Details</Accordion.Trigger>
               <Accordion.Content>
-                <Card padding="s" background="sand-2">
+                <Card padding="s" background="sand-3">
                   <Text
                     size="text-xs"
                     color="sand-12"
