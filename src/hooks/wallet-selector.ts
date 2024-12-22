@@ -4,10 +4,11 @@ import type {
   WalletSelectorState,
 } from '@near-wallet-selector/core';
 import { setupWalletSelector } from '@near-wallet-selector/core';
-import { setupHereWallet } from '@near-wallet-selector/here-wallet';
+// TODO verify if HERE & NearMobile support signMessage
+// import { setupHereWallet } from '@near-wallet-selector/here-wallet';
 import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
 import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
-import { setupNearMobileWallet } from '@near-wallet-selector/near-mobile-wallet';
+// import { setupNearMobileWallet } from '@near-wallet-selector/near-mobile-wallet';
 import { setupSender } from '@near-wallet-selector/sender';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -32,8 +33,9 @@ export function useWalletSelector() {
               callbackUrl: 'https://app.near.ai',
               deprecated: false,
             }),
-            setupHereWallet(),
-            setupNearMobileWallet(),
+            // TODO verify if HERE & NearMobile support signMessage
+            // setupHereWallet(),
+            // setupNearMobileWallet(),
           ],
         });
       }
