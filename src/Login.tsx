@@ -75,8 +75,21 @@ export const Login = () => {
         signature: signed.signature,
         accountId: signed.accountId,
         publicKey: signed.publicKey,
-        nonce: signed.nonce,
       });
+
+      try {
+        urlParams.append(
+          'signedMessageParams',
+          JSON.stringify({
+            message,
+            recipient,
+            callbackUrl,
+            nonce,
+          }),
+        );
+      } catch (error) {
+        console.error('Failed to stringify signedMessageParams', error);
+      }
 
       window.location.href = `${callbackUrl}#${urlParams.toString()}`;
     } catch (error) {
