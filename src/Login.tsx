@@ -75,6 +75,7 @@ export const Login = () => {
         signature: signed.signature,
         accountId: signed.accountId,
         publicKey: signed.publicKey,
+        nonce: signed.nonce,
       });
 
       window.location.href = `${callbackUrl}#${urlParams.toString()}`;
