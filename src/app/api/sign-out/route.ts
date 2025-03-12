@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { AUTH_COOKIE_NAME } from '../sign-in/route';
+import { AUTH_COOKIE_NAME } from '~/utils/cookies';
 
 export async function POST() {
   const result = NextResponse.json({});

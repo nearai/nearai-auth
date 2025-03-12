@@ -10,14 +10,6 @@ export const signedMessageAuthorizationModel = z.object({
   nonce: z.string().regex(/^\d{32}$/),
 });
 
-export const signInModel = z.discriminatedUnion('method', [
-  z.object({
-    method: z.literal('SIGNED_MESSAGE'),
-    signedMessage: signedMessageAuthorizationModel,
-  }),
-  z.object({
-    method: z.literal('PROVIDER'),
-    foobar: z.string(),
-    // TODO
-  }),
-]);
+export const signInAuthorizationModel = z.object({
+  token: z.string(),
+});

@@ -1,9 +1,20 @@
 'use client';
 
-import { Button, Container, Flex, HR, Section, Text } from '@near-pagoda/ui';
+import {
+  Card,
+  CardList,
+  Container,
+  Flex,
+  HR,
+  Section,
+  SvgIcon,
+  Text,
+} from '@near-pagoda/ui';
+import { CaretRight, Wallet } from '@phosphor-icons/react';
+import { useState } from 'react';
 
 import { SignInWithWallet } from '~/components/SignInWithWallet';
-import AppleIcon from '~/svgs/apple-icon.svg';
+import { env } from '~/env';
 import GithubIcon from '~/svgs/github-icon.svg';
 import GoogleIcon from '~/svgs/google-icon.svg';
 import NearAiLogo from '~/svgs/near-ai-logo.svg';
@@ -11,44 +22,82 @@ import NearAiLogo from '~/svgs/near-ai-logo.svg';
 import s from './page.module.scss';
 
 export default function HomePage() {
+  const [showWalletSignIn, setShowWalletSignIn] = useState(false);
+
+  const signInWithGoogle = async () => {
+    window.location.href = `${env.NEXT_PUBLIC_ROUTER_URL}/auth/login/google`;
+  };
+
+  const signInWithGithub = async () => {
+    window.location.href = `${env.NEXT_PUBLIC_ROUTER_URL}/auth/login/github`;
+  };
+
+  const methods = [
+    {
+      icon: <Wallet weight="bold" />,
+      label: 'Wallet',
+      onClick: () => setShowWalletSignIn(true),
+    },
+    {
+      icon: <GoogleIcon />,
+      label: 'Google',
+      onClick: signInWithGoogle,
+    },
+    {
+      icon: <GithubIcon />,
+      label: 'Github',
+      onClick: signInWithGithub,
+    },
+  ];
+
   return (
     <Section grow="available">
       <Container size="xs" style={{ margin: 'auto' }}>
         <Flex direction="column" gap="l">
-          <NearAiLogo className={s.logo} />
+          <Flex direction="column" gap="m">
+            <NearAiLogo className={s.logo} />
 
-          <Text style={{ textAlign: 'center' }}>
-            Sign in with your preferred method:
-          </Text>
-
-          <Flex direction="column" gap="s">
-            <Button
-              label="Google"
-              iconLeft={<GoogleIcon />}
-              fill="outline"
-              variant="secondary"
-            />
-            <Button
-              label="Apple"
-              iconLeft={<AppleIcon />}
-              fill="outline"
-              variant="secondary"
-            />
-            <Button
-              label="GitHub"
-              iconLeft={<GithubIcon />}
-              fill="outline"
-              variant="secondary"
-            />
+            <Text style={{ textAlign: 'center' }}>
+              Sign in with your preferred{' '}
+              {showWalletSignIn ? 'wallet' : 'method'}:
+            </Text>
           </Flex>
 
-          <Flex align="center" gap="m">
-            <HR />
-            <Text size="text-s">or</Text>
-            <HR />
-          </Flex>
+          <HR />
 
-          <SignInWithWallet />
+          {!showWalletSignIn && (
+            <Flex direction="column" gap="s">
+              <CardList>
+                {methods.map((method) => (
+                  <Card
+                    onClick={method.onClick}
+                    background="sand-0"
+                    border="sand-3"
+                    padding="m"
+                    key={method.label}
+                  >
+                    <Flex align="center" gap="m">
+                      <SvgIcon icon={method.icon} color="sand-10" />
+                      <Text weight={500} color="sand-12">
+                        {method.label}
+                      </Text>
+                      <SvgIcon
+                        icon={<CaretRight weight="bold" />}
+                        color="violet-10"
+                        style={{ marginLeft: 'auto' }}
+                        size="xs"
+                      />
+                    </Flex>
+                  </Card>
+                ))}
+              </CardList>
+            </Flex>
+          )}
+
+          <SignInWithWallet
+            open={showWalletSignIn}
+            setOpen={setShowWalletSignIn}
+          />
         </Flex>
       </Container>
     </Section>

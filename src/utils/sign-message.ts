@@ -1,7 +1,3 @@
-import { type z } from 'zod';
-
-import { type signedMessageAuthorizationModel } from './models';
-
 const RECIPIENT = 'ai.near';
 const MESSAGE = 'Welcome to NEAR AI Hub!';
 
@@ -58,20 +54,4 @@ function computeNonce(passedNonce: string | null) {
 function generateNonce() {
   const nonce = Date.now().toString();
   return nonce.padStart(32, '0');
-}
-
-export function redirectToCallbackUrlAfterSigningMessage(
-  signed: z.infer<typeof signedMessageAuthorizationModel>,
-) {
-  const callbackUrlIsValid =
-    /^(http:\/\/localhost:|https:\/\/[^\/]+.near.ai|https:\/\/near.ai)/.test(
-      signed.callback_url,
-    );
-
-  if (!callbackUrlIsValid) {
-    throw new Error(`Invalid callbackUrl value passed: ${signed.callback_url}`);
-  }
-
-  const params = new URLSearchParams(signed);
-  window.location.href = `${signed.callback_url}#${params.toString()}`;
 }

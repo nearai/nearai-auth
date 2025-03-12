@@ -6,31 +6,24 @@ import { type z } from 'zod';
 
 import { Processing } from '~/components/Processing';
 import { handleSignInError, handleSignInSuccess } from '~/utils/helpers';
-import { signedMessageAuthorizationModel } from '~/utils/models';
-import { getSignMessageUrlParams } from '~/utils/sign-message';
+import { signInAuthorizationModel } from '~/utils/models';
+import { getSignInUrlParams } from '~/utils/sign-in';
 
-export default function SignMessageCallbackPage() {
+export default function CallbackPage() {
   const router = useRouter();
   const [parsed, setParsed] = useState<z.infer<
-    typeof signedMessageAuthorizationModel
+    typeof signInAuthorizationModel
   > | null>(null);
   const hasSubmittedRef = useRef(false);
 
   useEffect(() => {
     async function parseParams() {
       try {
-        const params = getSignMessageUrlParams();
-
-        const auth = signedMessageAuthorizationModel.parse({
-          account_id: params.accountId,
-          public_key: params.publicKey,
-          signature: params.signature,
-          callback_url: params.callbackUrl,
-          message: params.message,
-          recipient: params.recipient,
-          nonce: params.nonce,
+        const params = getSignInUrlParams();
+        if (params.error) throw new Error(params.error);
+        const auth = signInAuthorizationModel.parse({
+          token: params.token,
         });
-
         setParsed(auth);
       } catch (error) {
         handleSignInError(error, router);
@@ -56,7 +49,7 @@ export default function SignMessageCallbackPage() {
 
         if (!response.ok) throw new Error('Failed to sign in');
 
-        handleSignInSuccess(parsed.callback_url, parsed);
+        handleSignInSuccess();
       } catch (error) {
         handleSignInError(error, router);
       }

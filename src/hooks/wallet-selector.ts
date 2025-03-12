@@ -8,7 +8,7 @@ import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
 import { setupSender } from '@near-wallet-selector/sender';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { QueryParams } from '../lib/sign-message';
+import type { QueryParams } from '../utils/sign-message';
 
 export function useWalletSelector() {
   const setupPromise = useRef<Promise<WalletSelector> | null>(null);
