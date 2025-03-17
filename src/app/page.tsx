@@ -10,19 +10,20 @@ import {
   SvgIcon,
   Text,
 } from '@near-pagoda/ui';
-import { CaretRight, Wallet } from '@phosphor-icons/react';
+import { CaretRight } from '@phosphor-icons/react';
 import { useState } from 'react';
 
-import { SignInWithWallet } from '~/components/SignInWithWallet';
+import { SignInWithNear } from '~/components/SignInWithNear';
 import { env } from '~/env';
 import GithubIcon from '~/svgs/github-icon.svg';
 import GoogleIcon from '~/svgs/google-icon.svg';
 import NearAiLogo from '~/svgs/near-ai-logo.svg';
+import NearIcon from '~/svgs/near-icon.svg';
 
 import s from './page.module.scss';
 
 export default function HomePage() {
-  const [showWalletSignIn, setShowWalletSignIn] = useState(false);
+  const [showSignInWithNear, setShowSignInWithNear] = useState(false);
 
   const signInWithGoogle = async () => {
     window.location.href = `${env.NEXT_PUBLIC_ROUTER_URL}/auth/login/google`;
@@ -34,9 +35,9 @@ export default function HomePage() {
 
   const methods = [
     {
-      icon: <Wallet weight="bold" />,
-      label: 'Wallet',
-      onClick: () => setShowWalletSignIn(true),
+      icon: <NearIcon />,
+      label: 'NEAR Wallet',
+      onClick: () => setShowSignInWithNear(true),
     },
     {
       icon: <GoogleIcon />,
@@ -59,13 +60,13 @@ export default function HomePage() {
 
             <Text style={{ textAlign: 'center' }}>
               Sign in with your preferred{' '}
-              {showWalletSignIn ? 'wallet' : 'method'}:
+              {showSignInWithNear ? 'wallet' : 'method'}:
             </Text>
           </Flex>
 
           <HR />
 
-          {!showWalletSignIn && (
+          {!showSignInWithNear && (
             <Flex direction="column" gap="s">
               <CardList>
                 {methods.map((method) => (
@@ -94,9 +95,9 @@ export default function HomePage() {
             </Flex>
           )}
 
-          <SignInWithWallet
-            open={showWalletSignIn}
-            setOpen={setShowWalletSignIn}
+          <SignInWithNear
+            open={showSignInWithNear}
+            setOpen={setShowSignInWithNear}
           />
         </Flex>
       </Container>

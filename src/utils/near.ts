@@ -11,7 +11,7 @@ export function getSignMessageCallbackUrl() {
     nonce: queryParams.nonce,
   });
 
-  return `${window.location.origin}/sign-message-callback?${urlParams.toString()}`;
+  return `${window.location.origin}/near-sign-message-callback?${urlParams.toString()}`;
 }
 
 export type QueryParams = ReturnType<typeof getSignMessageUrlParams>;

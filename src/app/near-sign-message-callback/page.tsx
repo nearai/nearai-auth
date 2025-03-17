@@ -1,27 +1,25 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
-import { type z } from 'zod';
+import { useEffect, useRef } from 'react';
 
 import { Processing } from '~/components/Processing';
 import { handleSignInError, handleSignInSuccess } from '~/utils/helpers';
-import { signedMessageAuthorizationModel } from '~/utils/models';
-import { getSignMessageUrlParams } from '~/utils/sign-message';
+import { authNearSignedMessageModel } from '~/utils/models';
+import { getSignMessageUrlParams } from '~/utils/near';
 
 export default function SignMessageCallbackPage() {
   const router = useRouter();
-  const [parsed, setParsed] = useState<z.infer<
-    typeof signedMessageAuthorizationModel
-  > | null>(null);
   const hasSubmittedRef = useRef(false);
 
   useEffect(() => {
-    async function parseParams() {
+    if (hasSubmittedRef.current) return;
+    hasSubmittedRef.current = true;
+
+    const submit = async () => {
       try {
         const params = getSignMessageUrlParams();
-
-        const auth = signedMessageAuthorizationModel.parse({
+        const parsed = authNearSignedMessageModel.parse({
           account_id: params.accountId,
           public_key: params.publicKey,
           signature: params.signature,
@@ -31,21 +29,6 @@ export default function SignMessageCallbackPage() {
           nonce: params.nonce,
         });
 
-        setParsed(auth);
-      } catch (error) {
-        handleSignInError(error, router);
-      }
-    }
-
-    void parseParams();
-  }, [router]);
-
-  useEffect(() => {
-    if (!parsed || hasSubmittedRef.current) return;
-    hasSubmittedRef.current = true;
-
-    const submit = async () => {
-      try {
         const response = await fetch('/api/callback', {
           method: 'POST',
           headers: {
@@ -63,7 +46,7 @@ export default function SignMessageCallbackPage() {
     };
 
     void submit();
-  }, [parsed, router]);
+  }, [router]);
 
   return <Processing />;
 }

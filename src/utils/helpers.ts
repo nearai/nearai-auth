@@ -3,7 +3,7 @@ import { type AppRouterInstance } from 'next/dist/shared/lib/app-router-context.
 
 export function handleSignInSuccess(
   callbackUrl?: string,
-  includeCallbackHashParams: Record<string, string> = {},
+  callbackUrlHashParams: Record<string, string> = {},
 ) {
   const opener = window.opener as WindowProxy | null;
 
@@ -16,17 +16,18 @@ export function handleSignInSuccess(
     );
   } else {
     if (callbackUrl) {
-      const callbackUrlIsValid =
-        /^(http:\/\/localhost:|https:\/\/[^\/]+.near.ai|https:\/\/near.ai|https:\/\/[^\/]+-near-ai.vercel.app)/.test(
-          callbackUrl,
+      const isTrustedOrigin =
+        /^(http:\/\/localhost:|https:\/\/[^\/]+.near.ai|https:\/\/near.ai|https:\/\/[^\/]+-near-ai.vercel.app)$/.test(
+          new URL(callbackUrl).origin,
         );
 
-      if (!callbackUrlIsValid) {
-        throw new Error(`Invalid callbackUrl value passed: ${callbackUrl}`);
+      if (isTrustedOrigin) {
+        // Only include callbackUrlHashParams if its a trusted callback origin
+        const params = new URLSearchParams(callbackUrlHashParams);
+        window.location.href = `${callbackUrl}#${params.toString()}`;
+      } else {
+        window.location.href = callbackUrl;
       }
-
-      const params = new URLSearchParams(includeCallbackHashParams);
-      window.location.href = `${callbackUrl}#${params.toString()}`;
     } else {
       window.location.href = 'https://app.near.ai';
     }
@@ -44,4 +45,22 @@ export function handleSignInError(error: unknown, router: AppRouterInstance) {
   });
 
   router.replace('/');
+}
+
+export function getSignInUrlParams() {
+  const params = new URLSearchParams(window.location.search);
+
+  // Override search params with hash params
+  const paramsFromHash = new URLSearchParams(window.location.hash.substring(1));
+  paramsFromHash.forEach((value, key) => {
+    params.set(key, value);
+  });
+
+  const result = {
+    error: params.get('error'),
+    access_token: params.get('access_token'),
+    refresh_token: params.get('refresh_token'),
+  };
+
+  return result;
 }

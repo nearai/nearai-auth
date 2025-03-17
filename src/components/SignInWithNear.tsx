@@ -17,7 +17,7 @@ import { useWalletSelector } from '../hooks/wallet-selector';
 import {
   getSignMessageCallbackUrl,
   getSignMessageUrlParams,
-} from '../utils/sign-message';
+} from '../utils/near';
 
 type Props = {
   open: boolean;
@@ -26,7 +26,7 @@ type Props = {
 
 // TODO: Add support for signing message with ETH wallets: https://docs.near.org/build/web3-apps/ethereum-wallets
 
-export const SignInWithWallet = ({ open, setOpen }: Props) => {
+export const SignInWithNear = ({ open, setOpen }: Props) => {
   const router = useRouter();
   const { state, signMessage } = useWalletSelector();
 

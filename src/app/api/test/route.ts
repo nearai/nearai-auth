@@ -1,14 +1,14 @@
-import { cookies } from 'next/headers';
+import { type NextRequest } from 'next/server';
 
 import { env } from '~/env';
-import { AUTH_COOKIE_NAME } from '~/utils/cookies';
+import { getAuthCookies } from '~/utils/auth';
 
-export async function GET() {
-  const auth = cookies().get(AUTH_COOKIE_NAME)?.value;
+export async function GET(request: NextRequest) {
+  const { accessToken } = getAuthCookies(request);
 
   const response = await fetch(`${env.NEXT_PUBLIC_ROUTER_URL}/auth/test`, {
     headers: {
-      Authorization: auth ? `Bearer ${auth}` : '',
+      Authorization: accessToken ? `Bearer ${accessToken}` : '',
     },
   });
 
