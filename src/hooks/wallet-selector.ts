@@ -4,15 +4,11 @@ import type {
   WalletSelectorState,
 } from '@near-wallet-selector/core';
 import { setupWalletSelector } from '@near-wallet-selector/core';
-// TODO verify if HERE & NearMobile support signMessage
-// import { setupHereWallet } from '@near-wallet-selector/here-wallet';
 import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
-import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
-// import { setupNearMobileWallet } from '@near-wallet-selector/near-mobile-wallet';
 import { setupSender } from '@near-wallet-selector/sender';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import type { QueryParams } from '../utils/helpers';
+import type { QueryParams } from '../utils/near';
 
 export function useWalletSelector() {
   const setupPromise = useRef<Promise<WalletSelector> | null>(null);
@@ -25,17 +21,22 @@ export function useWalletSelector() {
         setupPromise.current = setupWalletSelector({
           network: 'mainnet',
           modules: [
-            setupMyNearWallet(),
-            setupSender(),
             setupMeteorWallet(),
-            setupBitteWallet({
-              walletUrl: 'https://wallet.bitte.ai',
-              callbackUrl: 'https://app.near.ai',
-              deprecated: false,
-            }),
-            // TODO verify if HERE & NearMobile support signMessage
-            // setupHereWallet(),
-            // setupNearMobileWallet(),
+            setupSender(),
+            setupBitteWallet(),
+
+            /*
+              NOTE: MyNearWallet has been disabled for the time being due to how it 
+              looks for the presence of `window.opener` and will not redirect. Instead, 
+              it emits a postMessage() event which isn't currently compatible with how 
+              our UI opens auth.near.ai via popup window.
+
+              We can come back to this after our new auth flow is implemented. A simple 
+              PR change submitted to my-near-wallet might do the trick to pass an option 
+              that disables the `window.opener` check.
+
+              https://github.com/mynearwallet/my-near-wallet/blob/master/packages/frontend/src/routes/SignWrapper.js#L108
+            */
           ],
         });
       }
