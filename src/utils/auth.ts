@@ -43,8 +43,7 @@ export async function conditionallyRefreshAuthTokens(
       // Refresh the current access token if expired or will expire within 2 minutes
 
       const unixNow = Math.floor(Date.now() / 1000);
-      // const paddingSeconds = 120;
-      const paddingSeconds = 0;
+      const paddingSeconds = 120;
       const shouldRefresh = unixNow + paddingSeconds > accessTokenPayload.exp;
 
       if (shouldRefresh) {
