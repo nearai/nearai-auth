@@ -5,6 +5,7 @@ import type {
 } from '@near-wallet-selector/core';
 import { setupWalletSelector } from '@near-wallet-selector/core';
 // TODO verify if HERE & NearMobile support signMessage
+import { setupHotWallet } from '@near-wallet-selector/hot-wallet';
 // import { setupHereWallet } from '@near-wallet-selector/here-wallet';
 import { setupMeteorWallet } from '@near-wallet-selector/meteor-wallet';
 import { setupMyNearWallet } from '@near-wallet-selector/my-near-wallet';
@@ -25,6 +26,7 @@ export function useWalletSelector() {
         setupPromise.current = setupWalletSelector({
           network: 'mainnet',
           modules: [
+            setupHotWallet(),
             setupMyNearWallet(),
             setupSender(),
             setupMeteorWallet(),
