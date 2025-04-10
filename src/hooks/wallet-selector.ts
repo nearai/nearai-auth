@@ -26,10 +26,10 @@ export function useWalletSelector() {
         setupPromise.current = setupWalletSelector({
           network: 'mainnet',
           modules: [
-            setupHotWallet(),
-            setupMyNearWallet(),
-            setupSender(),
             setupMeteorWallet(),
+            setupHotWallet(),
+            setupSender(),
+            setupMyNearWallet(),
             setupBitteWallet({
               walletUrl: 'https://wallet.bitte.ai',
               callbackUrl: 'https://app.near.ai',
