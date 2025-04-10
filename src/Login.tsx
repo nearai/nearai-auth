@@ -1,5 +1,6 @@
 import {
   Accordion,
+  Badge,
   Button,
   Card,
   CardList,
@@ -13,6 +14,7 @@ import {
   Section,
   SvgIcon,
   Text,
+  Tooltip,
 } from '@near-pagoda/ui';
 import { type WalletSelectorState } from '@near-wallet-selector/core';
 import {
@@ -198,9 +200,19 @@ export const Login = () => {
                       alt={module.metadata.name}
                       indicateParentClickable
                     />
-                    <Text weight={500} color="sand-12">
+                    <Text
+                      weight={500}
+                      color="sand-12"
+                      size="text-s"
+                      style={{ marginRight: 'auto' }}
+                    >
                       {module.metadata.name}
                     </Text>
+                    {module.id === 'meteor-wallet' && (
+                      <Tooltip content="Meteor Wallet provides the best overall experience and simplifies setting up a new NEAR account.">
+                        <Badge label="Recommended" size="small" />
+                      </Tooltip>
+                    )}
                     <SvgIcon
                       color={module.metadata.available ? 'violet-9' : 'sand-9'}
                       icon={
@@ -210,7 +222,7 @@ export const Login = () => {
                           <DownloadSimple />
                         )
                       }
-                      style={{ marginLeft: 'auto' }}
+                      size="xs"
                     />
                   </Flex>
                 </Card>
